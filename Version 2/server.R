@@ -29,7 +29,7 @@ function(input, output) {
     x <- sample(1:nn,num_of_samples,replace=T)
     
     # Compose data frame
-      xx=cbind(paste0(LETTERS[1:nn]),table(x ),rep(num_of_samples/nn,nn)) 
+      xx=cbind(paste0(LETTERS[1:nn]),table(x ),round(rep(num_of_samples/nn,nn),2)) 
       xx=as.data.frame(xx)
       colnames(xx)=c("Categories","Observed Value","Expected Value")
       xx
