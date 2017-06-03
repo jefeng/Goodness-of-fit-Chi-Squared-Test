@@ -170,7 +170,7 @@ shinyServer(function(input, output,session) {
     rownames(tab) <-c("Observed","Expected")
     colnames(tab) <- names
     barplot(tab,beside=T,col=c("dark green","yellow"),
-            main="Bargraph of Observed and Expected Counts",xlab="",ylab="Counts",
+            main="Barchart of Observed and Expected Counts",xlab="",ylab="Counts",
             legend.text=TRUE)
   })
   
@@ -217,7 +217,7 @@ shinyServer(function(input, output,session) {
     )
     names(df)[4] <- c("Contribution to Chi-Square")
     df
-  })
+  }, align="c")
 
   output$barGraphLatest <- renderPlot({
     input$resample
@@ -229,7 +229,7 @@ shinyServer(function(input, output,session) {
       rownames(tab) <-c("Observed","Expected","Resampled")
       colnames(tab) <- isolate(namesInput())
       barplot(tab,beside=T,col=c("dark green","yellow","grey"),
-              main="Bargraph of Observed, Expected, and Latest Resample",xlab="",
+              main="Barchart of Observed, Expected, and Latest Resample",xlab="",
               ylab="Counts",
               legend.text=TRUE)
     }
@@ -270,7 +270,7 @@ shinyServer(function(input, output,session) {
                    "Last Resampled Chi-Square", paste("Percent Above ",round(obs,2),sep="")
     )
     df    
-  })
+  },align = "c")
   
   output$pvalueplot <-
     renderPlot({
