@@ -10,9 +10,13 @@ fluidPage(theme = shinytheme("flatly"),
               sliderInput("n2", "The number of Categories:", min = 1, max = 8, value = 5 ,
                           step = 1) ,
               sliderInput("n3", "The number of Simulation:", min = 1, max = 1000, value = 5 ,
-                          step = 1),
-              submitButton("Submit")
+                          step = 5, animate = TRUE),
+              
+              br(),
+               tags$div(a(href="https://klosever.shinyapps.io/Version_1/", "Click here if you have real data "))
             )),
+           
+           
             column(7,align="center", tableOutput("values")),
             
             column(5,offset=1, align="center",
