@@ -2,7 +2,20 @@ library(shiny)
 library(shinythemes)
 library(pander)
 function(input, output) {
- 
+  var <- reactiveValues(x1 = NULL, y = NULL)
+  
+  observe({
+    # Initially will be empty
+    if (is.null(input$Click)){
+      return()
+    }
+    
+    isolate({
+      var$x1 <- c(var$x1, input$Click$x1)
+      var$y <- c(var$y, input$Click$y)
+    })
+  })
+  
   output$plot1 <- renderPlot({
     num_of_samples = input$n
     nn= input$n2
@@ -19,9 +32,19 @@ function(input, output) {
       pp[i]=a$p.value
       
     }
-    hist(pp,breaks=5,main="P-value Distribution of Chi-Squared Test", xlab="P Value")
+    
+   
+    
+    if (ss<=50) {stripchart(pp,method = "stack",offset = 0.8, at = .15, pch = 19,
+               main="P-value Distribution of Chi-Squared Test", xlab="P Value")}
+    
+    else {hist(pp,breaks=5,main="P-value Distribution of Chi-Squared Test", xlab="P Value")}
+    
+     lines(var$x1,var$y )
+ 
   })
   
+   
   sliderValues <- reactive({
     num_of_samples = input$n
     nn= input$n2
@@ -29,11 +52,11 @@ function(input, output) {
     x <- sample(1:nn,num_of_samples,replace=T)
     
     # Compose data frame
-      xx=cbind(paste0(LETTERS[1:nn]),table(x ),round(rep(num_of_samples/nn,nn),2)) 
-      xx=as.data.frame(xx)
-      colnames(xx)=c("Categories","Observed Value","Expected Value")
-      xx
-      })
+    xx=cbind(paste0(LETTERS[1:nn]),table(x ),round(rep(num_of_samples/nn,nn),2)) 
+    xx=as.data.frame(xx)
+    colnames(xx)=c("Categories","Observed Value","Expected Value")
+    xx
+  })
   
   
   output$values <- renderTable({
@@ -43,3 +66,6 @@ function(input, output) {
   
   
 }
+
+
+
