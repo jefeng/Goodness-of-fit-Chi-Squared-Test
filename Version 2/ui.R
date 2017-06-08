@@ -1,6 +1,6 @@
 library(shiny)
 library(shinythemes)
-library(pander)
+library(ggplot2)
 fluidPage(theme = shinytheme("flatly"),
           titlePanel(h3("Chi-Squared Goodness-fit-Test and Simulation ")),
           fluidRow(
