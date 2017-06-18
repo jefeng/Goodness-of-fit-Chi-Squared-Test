@@ -20,25 +20,26 @@ function(input, output) {
       
     }
     
-   
+    
     
     if (ss<=50) {index=seq(1,length(pp))
     data<-data.frame(index,pp)
-      plot(data, type="p", xlab="Times of Simulation", ylab="P Value",
-           main="P-value Distribution of Simulation")}
-               
+    plot(data, type="p", xlab="Times of Simulation", ylab="P Value",
+         main="P-value Distribution of Simulation")}
     
-    else {hist(pp,breaks=5,main="P-value Distribution of Simulation", xlab="P Value")}
+    
+    else {hist(pp,breaks=5,main="P-value Distribution of Simulation", xlab="P Value")
+      abline(h = ss/nn, col = "red")}
     
     
   })
   
- 
+  
   output$coordinate<- renderText({
     paste0("x=", input$Click$x, "\ny=", input$Click$y)
   })
   
- 
+  
   sliderValues <- reactive({
     num_of_samples = input$n
     nn= input$n2
@@ -60,6 +61,4 @@ function(input, output) {
   
   
 }
-
-
 
