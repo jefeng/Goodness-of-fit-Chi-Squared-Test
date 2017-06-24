@@ -3,6 +3,9 @@ library(shinythemes)
 library(ggplot2)
 fluidPage(theme = shinytheme("flatly"),
           titlePanel(h3("Chi-Squared Goodness-fit-Test and Simulation ")),
+          tags$style(HTML(".js-irs-0 .irs-single, .js-irs-0 .irs-bar-edge, .js-irs-0 .irs-bar {background: #1C2C5B}")),
+          tags$style(HTML(".js-irs-1 .irs-single, .js-irs-1 .irs-bar-edge, .js-irs-1 .irs-bar {background: #1C2C5B}")),
+          tags$style(HTML(".js-irs-2 .irs-single, .js-irs-2 .irs-bar-edge, .js-irs-2 .irs-bar {background: #1C2C5B}")),
           fluidRow(
             column(3, offset = 0.5,wellPanel(
               sliderInput("n", "Number of Samples:", min = 10, max = 1000, value = 50 ,
