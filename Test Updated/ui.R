@@ -22,14 +22,24 @@ fluidPage(theme = shinytheme("flatly"),
            
            
             column(width = 4,offset = 1, tableOutput("values")),
-              
+            
+             
+            
             column(6,height=500,plotOutput("plot1", width = 570, height = 430,click = "plot_click")),
-           
+            
             absolutePanel(
               id = "controls", class = "panel panel-default", fixed = FALSE,
               draggable = TRUE, top = 60, left = "auto", right = 8, bottom = "auto",
-              width = 450, height = "auto",
-            tableOutput("plot_clickedpoints"))
+              width = 382, height = "auto",
+              tableOutput("plot_clickedpoints")),
+            
+            absolutePanel(
+              id = "controls", class = "myClass", fixed = FALSE,
+              draggable = TRUE, top = 400, left = "auto", right = 135, bottom = "auto",
+              width = 117, height = "auto",
+              textOutput("text"))
+            
+            
         )
         
   

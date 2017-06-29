@@ -68,19 +68,40 @@ function(input, output) {
       return()
     i<-res$index
     pvalue<-round(res$pp,3)
-    pp<-req(pvalue,nn)
     x1<-unlist(mytable[i])
-    xx=cbind(paste0(LETTERS[1:nn]),table(x1),round(rep(num_of_samples/nn,nn),2),pp) 
+    xx=cbind(paste0(LETTERS[1:nn]),table(x1),round(rep(num_of_samples/nn,nn),2)) 
     xx=as.data.frame(xx)
-    colnames(xx)=c("Categories","Observed Value","Expected Value","P-value")
+    colnames(xx)=c("Categories","Observed Value","Expected Value")
     xx
+    
   })
   
+    clickedpoints2<- reactive({
+      # For base graphics, I need to specify columns, though for ggplot2,
+      # it's usually not necessary.
+      num_of_samples = input$n
+      nn= input$n2
+      mytable<-firstdata()  
+      
+      data<-plotdata()
+      res <- nearPoints(data, input$plot_click, "index", "pp")
+      if (nrow(res) == 0)
+        return()
+      i<-res$index
+      pvalue<-round(res$pp,3)
+      paste("P-value =  ",as.character(pvalue) )
+      
+    })
   
     output$plot_clickedpoints<-renderTable({
     clickedpoints()},
     align="c"
   )
+    
+    output$text<- renderText({
+      clickedpoints2()
+       
+     })
 
   sliderValues <- reactive({
     num_of_samples = input$n
