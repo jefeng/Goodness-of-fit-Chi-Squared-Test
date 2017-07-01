@@ -69,9 +69,10 @@ function(input, output) {
     i<-res$index
     pvalue<-round(res$pp,3)
     x1<-unlist(mytable[i])
-    xx=cbind(paste0(LETTERS[1:nn]),table(x1),round(rep(num_of_samples/nn,nn),2)) 
+    xx=cbind(paste0(LETTERS[1:nn]),table(x1),round(rep(num_of_samples/nn,nn),2),
+             table(x1)/sum(table(x1)), round(rep(num_of_samples/nn,nn),2)/sum(round(rep(num_of_samples/nn,nn),2))) 
     xx=as.data.frame(xx)
-    colnames(xx)=c("Categories","Observed Value","Expected Value")
+    colnames(xx)=c("Categories","Observed Value","Expected Value", "Observed Proportion", "Expected Proportion")
     xx
     
   })
