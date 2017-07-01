@@ -30,7 +30,7 @@ fluidPage(theme = shinytheme("flatly"),
             absolutePanel(
               id = "controls", class = "panel panel-default", fixed = FALSE,
               draggable = TRUE, top = 40, left = "auto", right = 20, bottom = "auto",
-              width = 468, height = "auto",
+              width = 473, height = "auto",
               tableOutput("plot_clickedpoints")),
             
             absolutePanel(

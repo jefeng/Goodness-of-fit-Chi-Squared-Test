@@ -70,7 +70,9 @@ function(input, output) {
     pvalue<-round(res$pp,3)
     x1<-unlist(mytable[i])
     xx=cbind(paste0(LETTERS[1:nn]),table(x1),round(rep(num_of_samples/nn,nn),2),
-             table(x1)/sum(table(x1)), round(rep(num_of_samples/nn,nn),2)/sum(round(rep(num_of_samples/nn,nn),2))) 
+             round(table(x1)/sum(table(x1)),2), 
+             round(round(rep(num_of_samples/nn,nn),2)/sum(round(rep(num_of_samples/nn,nn),2)),3))
+            
     xx=as.data.frame(xx)
     colnames(xx)=c("Categories","Observed Value","Expected Value", "Observed Proportion", "Expected Proportion")
     xx
