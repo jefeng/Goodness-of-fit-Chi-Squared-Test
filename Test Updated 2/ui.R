@@ -8,6 +8,7 @@ fluidPage(theme = shinytheme("flatly"),
           tags$style(HTML(".js-irs-2 .irs-single, .js-irs-2 .irs-bar-edge, .js-irs-2 .irs-bar {background: #1C2C5B}")),
           fluidRow(
             column(3, offset = 0.5,wellPanel(
+              radioButtons("random", "Proportion in each category", choices = c("Same", "Different")),
               sliderInput("n", "Number of Samples:", min = 20, max = 1000, value = 50 ,
                           step = 1),
               sliderInput("n2", "The number of Categories:", min = 2, max = 8, value = 5 ,
@@ -20,24 +21,35 @@ fluidPage(theme = shinytheme("flatly"),
                          "Click here if you have real data to test "))
             )),
             
+            conditionalPanel(condition = "input.random == 'Different'",
+
+            column(width = 4,offset = 1, tableOutput("values1")),
+            column(6,height=500,plotOutput("plot1", width = 570, height = 430,click = "plot_click"))
+            ),
             
-            column(width = 4,offset = 1, tableOutput("values")),
-            
-            
-            
-            column(6,height=500,plotOutput("plot1", width = 570, height = 430,click = "plot_click")),
+            conditionalPanel(condition = "input.random == 'Same'",
+                             column(width = 4,offset = 1, tableOutput("values2")),
+                             column(6,height=500,plotOutput("plot2", width = 570, height = 430,click = "plot_click"))
+                             ),
             
             absolutePanel(
               id = "controls", class = "panel panel-default", fixed = FALSE,
               draggable = TRUE, top = 40, left = "auto", right = 20, bottom = "auto",
               width = 473, height = "auto",
+              conditionalPanel(condition = "input.random == 'Same'",
+                               
               tableOutput("plot_clickedpoints")),
+              conditionalPanel(condition = "input.random == 'Different'",
+                               tableOutput("plot_clickedpoints2"))),
             
             absolutePanel(
               id = "controls", class = "myClass", fixed = FALSE,
               draggable = TRUE, top = 400, left = "auto", right = 175, bottom = "auto",
               width = 117, height = "auto",
-              textOutput("text"))
+              conditionalPanel(condition = "input.random == 'Same'",
+              textOutput("text2")),
+              conditionalPanel(condition = "input.random == 'Different'",
+                               textOutput("text1")))
             
             
           )
@@ -46,6 +58,3 @@ fluidPage(theme = shinytheme("flatly"),
           
           
 )
-
-
-
