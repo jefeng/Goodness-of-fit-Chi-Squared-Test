@@ -34,18 +34,18 @@ fluidPage(theme = shinytheme("flatly"),
             conditionalPanel(condition = "input.random == 'Different'",
 
             column(width = 4,offset = 1, tableOutput("values1")),
-            bsPopover("values1","","An example of a summary table", placement = "top"),
+            bsPopover("values1","","An example of a summary table", placement = "left", options = list(container = "body")),
             
             column(6,height=500,plotOutput("plot1", width = 570, height = 430,click = "plot_click")),
-            bsPopover("plot1","","Click the points to see the table behind it.", place="top")
+            bsPopover("plot1","","Click the points to see the table behind it.", place="right", options = list(container = "body"))
             ),
             
             
             conditionalPanel(condition = "input.random == 'Same'",
                              column(width = 4,offset = 1, tableOutput("values2")),
-                             bsPopover("values2","","An example of a summary table", placement = "top"),
+                             bsPopover("values2","","An example of a summary table", placement = "left", options = list(container = "body")),
                              column(6,height=500,plotOutput("plot2", width = 570, height = 430,click = "plot_click")),
-                             bsPopover("plot2","","Click the points to see the table behind it.", place="top")
+                             bsPopover("plot2","","Click the points to see the table behind it.", place="right", options = list(container = "body"))
                              ),
             
             absolutePanel(
