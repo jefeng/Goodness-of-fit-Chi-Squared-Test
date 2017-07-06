@@ -95,7 +95,7 @@ function(input, output) {
            main="P-value Distribution of Simulation", pch=18, cex=2, col="#1C2C5B")
     }
     else {hist(d$pp,breaks=5,main="P-value Distribution of Simulation", xlab="P Value")
-      abline(h = ss/nn, col = "red")}
+      abline(h = ss/5, col = "red")}
   })
   
 # For Same
@@ -110,7 +110,7 @@ function(input, output) {
            main="P-value Distribution of Simulation", pch=18, cex=2, col="#1C2C5B")
     }
     else {hist(d$pp,breaks=5,main="P-value Distribution of Simulation", xlab="P Value")
-      abline(h = ss/nn, col = "red")}
+      abline(h = ss/5, col = "red")}
   })
   
   
@@ -137,9 +137,11 @@ function(input, output) {
              round(table(x1)/sum(table(x1)),2), 
              round(round(expected,2)/sum(round(expected,2)),3))
     
-    xx=as.data.frame(xx)
+    xx=as.data.frame(xx,stringsAsFactors=FALSE)
     colnames(xx)=c("Categories","Observed Value","Expected Value", "Observed Proportion", "Expected Proportion")
+    xx[nrow(xx)+1,] <- c("Total", sum(table(x1)),sum(round(rep(num_of_samples/nn,nn),2)),"1","1")
     xx
+    
     
   })
   
@@ -162,10 +164,10 @@ function(input, output) {
              round(table(x1)/sum(table(x1)),2), 
              round(round(rep(num_of_samples/nn,nn),2)/sum(round(rep(num_of_samples/nn,nn),2)),3))
     
-    xx=as.data.frame(xx)
+    xx=as.data.frame(xx,stringsAsFactors=FALSE)
     colnames(xx)=c("Categories","Observed Value","Expected Value", "Observed Proportion", "Expected Proportion")
+    xx[nrow(xx)+1,] <- c("Total", sum(table(x1)),sum(round(rep(num_of_samples/nn,nn),2)),"1", "1")
     xx
-    
   })
   
 # For Random
@@ -240,10 +242,12 @@ function(input, output) {
     expected=trueProp*input$n
     
     # Compose data frame
-    xx=cbind(paste0(LETTERS[1:nn]),table(x1 ),round(expected,2)) 
-    xx=as.data.frame(xx)
-    colnames(xx)=c("Categories","Observed Value","Expected Value")
+    xx=cbind(paste0(LETTERS[1:nn]),round(expected,2), round(round(expected,2)/sum(round(expected,2)),3)) 
+    xx=as.data.frame(xx,stringsAsFactors=FALSE)
+    colnames(xx)=c("Categories","Expected Value", "Expected Proportion")
+    xx[nrow(xx)+1,] <- c("Total", sum(round(expected,2)),"1")
     xx
+    
   })
   
 # For Same
@@ -255,9 +259,10 @@ function(input, output) {
     x1 <- sample(1:nn,num_of_samples,replace=T)
     
     # Compose data frame
-    xx=cbind(paste0(LETTERS[1:nn]),table(x1 ),round(rep(num_of_samples/nn,nn),2)) 
-    xx=as.data.frame(xx)
-    colnames(xx)=c("Categories","Observed Value","Expected Value")
+    xx=cbind(paste0(LETTERS[1:nn]),round(rep(num_of_samples/nn,nn),2), round(round(rep(num_of_samples/nn,nn),2)/sum(round(rep(num_of_samples/nn,nn),2)),3)) 
+    xx=as.data.frame(xx,stringsAsFactors=FALSE)
+    colnames(xx)=c("Categories","Expected Value", "Expected Proportion")
+    xx[nrow(xx)+1,] <- c("Total", sum(round(rep(num_of_samples/nn,nn),2)),"1")
     xx
   })
 # For Random
