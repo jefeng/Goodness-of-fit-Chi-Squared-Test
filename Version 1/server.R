@@ -11,9 +11,13 @@ shinyServer(function(input, output,session) {
   latestSim <- NULL
   fullSim <-character()
   
+  
   total <- 0 #total number of sims over all set-ups including current one
   totalPrev <- 0 #total number of sims over all set-ups excluding current one
   
+  namesInput <- reactive({
+    unlist(strsplit(input$names,split=","))  
+  })
   
   nullsInput <- reactive({
     probs <- as.numeric(unlist(strsplit(input$nulls,split=",")))
@@ -21,35 +25,11 @@ shinyServer(function(input, output,session) {
   })
   
   obsInput <- reactive({
-    observed <- as.integer(unlist(strsplit(input$obs,split=",")))
+    observed <- as.numeric(unlist(strsplit(input$obs,split=",")))
     observed 
   })
   
-  namesInput <- reactive({
-    unlist(strsplit(input$names,split=","))  
-  })
   
-  
-  goodNulls <- reactive({
-    nulls <- nullsInput()
-    goodNulls <- TRUE
-    if (length(nulls) <= 1) goodNulls <- FALSE
-    anyMissing <- any(is.na(nulls))
-    if (anyMissing) goodNulls <- FALSE
-    if (!anyMissing && any(nulls <= 0)) goodNulls <- FALSE
-    if (!goodNulls) disable("resample")
-    goodNulls     
-  })
-  
-  goodObs <- reactive({
-    obs <- obsInput()
-    goodObs <- TRUE
-    if (length(obs) <= 1) goodObs <- FALSE
-    if (any(is.na(obs))) goodObs <- FALSE
-    if (any(obs < 0)) goodObs <- FALSE
-    if (!goodObs) disable("resample")
-    goodObs     
-  })
   
   goodNames <- reactive({
     names <- namesInput()
@@ -61,6 +41,37 @@ shinyServer(function(input, output,session) {
   })
   
   
+  goodNulls <- reactive({
+    nulls <- nullsInput()
+    goodNulls <- TRUE
+    if (length(nulls) <= 1) goodNulls <- FALSE
+    if (any(is.na(nulls))) goodNulls <- FALSE
+    if (!any(is.na(nulls)) && any(nulls <= 0)) goodNulls <- FALSE
+    if (!goodNulls) disable("resample")
+    goodNulls     
+  })
+  
+  goodNulls2<-
+    reactive({
+      nulls <- nullsInput()
+      goodNulls <- TRUE
+      if (sum(nulls)!=1) goodNulls<-FALSE
+      if (!goodNulls) disable("resample")
+      goodNulls     
+    })
+  
+  goodObs <- reactive({
+    obs <- obsInput()
+    goodObs <- TRUE
+    if (length(obs) <= 1) goodObs <- FALSE
+    if (any(is.na(obs))) goodObs <- FALSE
+    if (any(obs < 0)) goodObs <- FALSE
+    if (!goodObs) disable("resample")
+    goodObs     
+  })
+  
+  
+ 
   obschisqInput <- reactive({
     nulls <- nullsInput()/sum(nullsInput())
     totalCounts <- sum(obsInput())
@@ -88,7 +99,6 @@ shinyServer(function(input, output,session) {
         updateTabsetPanel(session,"myPanel",selected="Latest Simulation")
       }
       
-      #now build fake list of outcomes for each trial, on the last sim
       varLevels <- isolate(namesInput())
       namesList <- rep(varLevels,times=latestSim)
       fullSim <<- sample(namesList,size=totalCounts,replace=FALSE)
@@ -97,7 +107,7 @@ shinyServer(function(input, output,session) {
   })
   
   
-  #this erases the simulation history and puts user back to initial graph
+  
   simsReset <- reactive({
     input$reset
     totalPrev <<- totalPrev + numberSims
@@ -122,44 +132,52 @@ shinyServer(function(input, output,session) {
   })
   
   
-  output$totalPrev <- reactive({
+   output$totalPrev <- reactive({
     simsReset()
   })
   
-  outputOptions(output, 'totalPrev', suspendWhenHidden=FALSE)
+   outputOptions(output, 'totalPrev', suspendWhenHidden=FALSE)
   
   output$total <- reactive({
-    simsUpdate() 
+    simsUpdate() #for dependency
     total
   })
   
   
+  # needed for the conditional panels to work
   outputOptions(output, 'total', suspendWhenHidden=FALSE)
   
   output$barGraphInitial <- renderPlot({
+    if (goodNames()) enable("resample") else disable("resample")
+    validate(
+      need(goodNames(),"Enter a name for each category if you have a specific name, otherwise, just input letters like A,B,C,D.")
+    )
     
     if (goodNulls()) enable("resample") else disable("resample")
     validate(
-      need(goodNulls(),"Enter at least two null probabilities.  They should all be positive numbers.")
+      need(goodNulls(),"Enter at least two null probabilities as decimals. They should all be positive numbers.")
     )
+    
+    if (goodNulls2()) enable("resample") else disable("resample")
+    validate(
+      need(goodNulls2(),"Enter at least two null probabilities. They should be added up to 1.")
+    )
+    
+    
     if (goodObs()) enable("resample") else disable("resample")
     validate(
-      need(goodObs(),"Enter at least two counts.  All counts should be non-negative integers.")
-    )
-    if (goodNames()) enable("resample") else disable("resample")
-    validate(
-      need(goodNames(),"Enter a name for each possible outcome being tallied.")
+      need(goodObs(),"Enter at least two observed counts. All counts must be non-negative numbers.")
     )
     
     observed <- obsInput()
     nulls <- nullsInput()/sum(nullsInput())
     names <- namesInput()
     
-    lengthCheck <- (length(nulls) == length(observed)) && (length(observed)==length(names))
+    lengthCheck <- (length(names) == length(nulls)) && (length(nulls)==length(observed))
     if (lengthCheck) enable("resample") else disable("resample")
     validate(
       need(lengthCheck,
-           "Make sure that you enter the same number of null probabilities, counts and names.")
+           "Make sure that you enter the exact same number of names, null probabilities and observed counts.")
     )
     
     
@@ -170,9 +188,8 @@ shinyServer(function(input, output,session) {
     rownames(tab) <-c("Observed","Expected")
     colnames(tab) <- names
     barplot(tab,beside=T,col=c("dark green","yellow"),
-            main="Barchart of Observed and Expected Counts",xlab="",ylab="Counts",
+            main="Bargraph of Observed and Expected Counts",xlab="",ylab="Counts",
             legend.text=TRUE)
-    
   })
   
   output$remarksInitial <- renderText({
@@ -181,7 +198,7 @@ shinyServer(function(input, output,session) {
     nulls <- nullsInput()/sum(nullsInput())
     names <- namesInput()
     
-    allGood <- (goodNulls() && goodObs()) && goodNames()
+    allGood <- (goodNulls() && goodObs() && goodNulls2()) && goodNames() 
     lengthCheck <- (length(nulls) == length(observed)) && (length(observed)==length(names))
     
     validate(
@@ -202,7 +219,7 @@ shinyServer(function(input, output,session) {
     nulls <- nullsInput()/sum(nullsInput())
     names <- namesInput()
     
-    allGood <- (goodNulls() && goodObs()) && goodNames()
+    allGood <- (goodNulls() && goodObs() && goodNulls2()) && goodNames()
     lengthCheck <- (length(nulls) == length(observed)) && (length(observed)==length(names))
     
     validate(
@@ -218,8 +235,19 @@ shinyServer(function(input, output,session) {
     )
     names(df)[4] <- c("Contribution to Chi-Square")
     df
-  }, align="c")
+    }, align="c"
+  )
   
+  output$remarksLatest1 <- renderText({
+    input$resample
+    chisq <- obschisqInput()
+    rounded1 <- round(chisq,2)
+    rounded2 <- round(chisqSims[length(chisqSims)],2)
+    paste("Observed chi-square statistic =  ",as.character(rounded1),sep="\n",",",
+          "Latest resampled chi-square statistics = ",as.character(rounded2))
+  })
+  
+
   output$barGraphLatest <- renderPlot({
     input$resample
     if (length(chisqSims) > 0) {
@@ -230,7 +258,7 @@ shinyServer(function(input, output,session) {
       rownames(tab) <-c("Observed","Expected","Resampled")
       colnames(tab) <- isolate(namesInput())
       barplot(tab,beside=T,col=c("dark green","yellow","grey"),
-              main="Barchart of Observed, Expected, and Latest Resample",xlab="",
+              main="Bargraph of Observed, Expected, and Latest Resample",xlab="",
               ylab="Counts",
               legend.text=TRUE)
     }
@@ -242,6 +270,25 @@ shinyServer(function(input, output,session) {
     if (length(chisqSims)==1) band <- 1 else band <- "nrd0"
     density(chisqSims,n=500,from=0,to=xmaxInput(),bw=band)
   })
+  
+
+  output$summary1 <- renderTable({
+    input$resample
+    observed <- obsInput()
+    nulls <- nullsInput()/sum(nullsInput())
+    names <- namesInput()
+    expected <- nulls*sum(observed)
+    
+    df <- data.frame(Levels=names,
+                     Observed=observed,
+                     Expected=round(expected,2),
+                     Resampled=latestSim
+      )
+      df
+  }, align = "c"
+    
+  )
+  
   
   
   output$pvalueplot <-
@@ -265,16 +312,15 @@ shinyServer(function(input, output,session) {
                graph=TRUE)
     abline(v=obs)
     if (input$compareDen) {
-      lines(chisqDensities(),col="blue",lwd=4)
-      
+      lines(chisqDensities(),col="#D95F02",lwd=4)
     }
   })
   
   output$remarksProb <- renderText({
     obs <- obschisqInput()
-    paste0("The more simulation you take the better this approximations will be!")
-    
+    paste0("The orange curve approximates the true probability distribution of the chi-square statistic.",
+           " The shaded area gives the approximate probability of getting a chi-square statistic of ",
+           round(obs,2)," or more, if the probability of each outcome is under Null probabilities.")
   })
-  
   
 })
