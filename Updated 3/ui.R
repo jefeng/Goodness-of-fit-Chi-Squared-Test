@@ -39,7 +39,7 @@ fluidPage(theme = shinytheme("flatly"),
                              bsPopover("values2","","An example of a summary table", placement = "top", options = list(container = "body")),
                             
                              div(class="col-xs-12 col-md-8 col-lg-7",tableOutput("plot_clickedpoints"), 
-                                 textOutput("text2"))),
+                                 htmlOutput("text2", class="text-center"))),
             conditionalPanel(
               
               condition = "input.random == 'Different Null Probabilities'", 
@@ -47,7 +47,7 @@ fluidPage(theme = shinytheme("flatly"),
               bsPopover("values1","","An example of a summary table", placement = "top", options = list(container = "body")),
               
               div(class="col-xs-12 col-md-8 col-lg-7",tableOutput("plot_clickedpoints2"), 
-                  textOutput("text1")))
+                  htmlOutput("text1", class="text-center")))
               
             ),
                                 
